@@ -22,10 +22,12 @@ const io = new Server(server,{
 io.on('connection',async (socket)=>{
 
   console.log("A client is connected with the id",socket.id)
+  socket.join("room1")
 
   setTimeout(()=>{
-   socket.broadcast.emit("Questions","ques")
-   currentTime1 = +new Date()
+  //  socket.broadcast.emit("Questions","ques")
+    io.to("room1").emit("Questions","ques")
+    currentTime1 = +new Date()
   },10000)
 
   // socket.on("First_message",(msg)=>{
