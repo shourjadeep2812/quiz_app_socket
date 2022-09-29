@@ -3,7 +3,7 @@ const express = require('express');
 
 const app = new express()
 const http = require('http');
-const { ClientSession } = require('mongodb');
+// const { ClientSession } = require('mongodb');
 const server = http.createServer(app)
 const {Server} = require('socket.io')
 
@@ -18,50 +18,51 @@ const io = new Server(server,{
     methods:['GET','POST']
   }
 })
+const quiznamespace = io.of('/quiz');
 
-io.on('connection',async (socket)=>{
+quiznamespace.on('connection',async (socket)=>{
 
   console.log("A client is connected with the id",socket.id)
+  socket.on("First_message",(msg)=>{
+    console.log(msg);
+  })
   socket.join("room1")
 
-  setTimeout(()=>{
+
   //  socket.broadcast.emit("Questions","ques")
-    io.to("room1").emit("Questions","ques")
-    currentTime1 = +new Date()
+  setTimeout(()=>{
+    quiznamespace.to("room1").emit("Questions","ques")
+    currentTime1 = +new Date();
+    socket.on("answer",(answer)=>{
+      console.log("Inside answer")
+      currentTime2 = +new Date()
+      var timeTaken = currentTime2 - currentTime1
+      // clients.push(socket.id)
+      answers[timeTaken] = {
+        "timeTaken": timeTaken,
+        "answer": answer,
+        "clientId":socket.id
+      }
+      clients.push(timeTaken)
+      console.log(answers)
+    })
+  
+    socket.on("winner",(dump)=>{
+      let winningTime = Math.min(...clients)
+      let winnerId = answers[winningTime]["clientId"]
+     quiznamespace.to("room1").emit("winnerIs",winnerId)
+    })
   },10000)
+    
 
-  // socket.on("First_message",(msg)=>{
-  //   socket.emit("reply_message","Hello from server!!")
-  //   console.log(msg)
 
-  // })
-
-  // io.emit("Hello","World")
-
-  socket.on("answer",(answer)=>{
-    currentTime2 = +new Date()
-    var timeTaken = currentTime2 - currentTime1
-    // clients.push(socket.id)
-    answers[timeTaken] = {
-      "timeTaken": timeTaken,
-      "answer": answer,
-      "clientId":socket.id
-    }
-    clients.push(timeTaken)
-    console.log(answers)
-  })
-
-  socket.on("winner",(dump)=>{
-    let winningTime = Math.min(...clients)
-    let winnerId = answers[winningTime]["clientId"]
-    socket.broadcast.emit("winnerIs",winnerId)
-  })
+  
 })
 
 
-io.on('disconnect',(evt)=>{
+quiznamespace.on('disconnect',(evt)=>{
   console.log("Done")
-  console.log(answers)
+  // console.log(answers)
 })
 
 server.listen(3000,()=>{
