@@ -7,10 +7,11 @@ socket.emit("First_message","Hey server!!")
 
 socket.on("Questions",(ans)=>{
     console.log(ans)
+    socket.emit("answer","answer to the question")
+    socket.emit("winner","")
 })
 
-socket.emit("answer","answer to the question")
-socket.emit("winner","")
+
 
 socket.on("winnerIs",(winner)=>{
     console.log(winner)

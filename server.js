@@ -33,26 +33,40 @@ quiznamespace.on('connection',async (socket)=>{
   setTimeout(()=>{
     quiznamespace.to("room1").emit("Questions","ques")
     currentTime1 = +new Date();
+    
+  },8000)
+
     socket.on("answer",(answer)=>{
-      console.log("Inside answer")
-      currentTime2 = +new Date()
-      var timeTaken = currentTime2 - currentTime1
-      clients.push(socket.id)
-      answers[timeTaken] = {
-        "timeTaken": timeTaken,
-        "answer": answer,
-        "clientId":socket.id
-      }
-      clients.push(timeTaken)
-      console.log(answers)
+
+        console.log("Inside answer")
+        currentTime2 = +new Date()
+        var timeTaken = currentTime2 - currentTime1
+        clients.push(socket.id)
+        answers[timeTaken] = {
+          "timeTaken": timeTaken,
+          "answer": answer,
+          "clientId":socket.id
+        }
+        clients.push(timeTaken)
+        console.log(answers)
+
+        
+      
     })
-  
-    socket.on("winner",(dump)=>{
-      let winningTime = Math.min(...clients)
-      let winnerId = answers[winningTime]["clientId"]
-     quiznamespace.to("room1").emit("winnerIs",winnerId)
+
+    socket.on("winner",(dummy)=>{
+      setTimeout(()=>{
+        let winningTime = Math.min(...clients)
+        let winner = answers[winningTime]
+        quiznamespace.to("room1").emit("winnerIs",winner)
+      },5000)
+      
     })
-  },5000)
+
+      
+
+    // quiznamespace.to("room1").emit("winnerIs",winnerId)
+    
     
 
 
