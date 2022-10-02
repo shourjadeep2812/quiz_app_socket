@@ -37,7 +37,7 @@ quiznamespace.on('connection',async (socket)=>{
       console.log("Inside answer")
       currentTime2 = +new Date()
       var timeTaken = currentTime2 - currentTime1
-      // clients.push(socket.id)
+      clients.push(socket.id)
       answers[timeTaken] = {
         "timeTaken": timeTaken,
         "answer": answer,
@@ -52,7 +52,7 @@ quiznamespace.on('connection',async (socket)=>{
       let winnerId = answers[winningTime]["clientId"]
      quiznamespace.to("room1").emit("winnerIs",winnerId)
     })
-  },10000)
+  },5000)
     
 
 
